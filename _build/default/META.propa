@@ -1,0 +1,6 @@
+description = ""
+requires = "containers"
+archive(byte) = "propa.cma"
+archive(native) = "propa.cmxa"
+plugin(byte) = "propa.cma"
+plugin(native) = "propa.cmxs"
