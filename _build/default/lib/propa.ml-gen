@@ -1,2 +1,0 @@
-(** @canonical Propa.Main *)
-module Main = Propa__Main
