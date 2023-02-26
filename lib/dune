@@ -1,5 +1,18 @@
 (library
  (public_name propa)
+ (preprocess (pps ppx_deriving.show))
  (name propa)
  (libraries containers))
 
+(menhir
+  (modules tokens)
+  (flags --only-tokens)
+)
+
+(menhir
+  (modules tokens parser)
+  (merge_into parser)
+  (flags --external-tokens Tokens)
+)
+
+(ocamllex lexer)
