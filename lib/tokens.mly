@@ -10,9 +10,9 @@
 %token IFFTOK 
 %token EOL 
 
-// %right ANDTOK ORTOK IFFTOK IMPLIESTOK NOTTOK 
 %right IFFTOK IMPLIESTOK
-%right ORTOK ANDTOK 
+%right ORTOK  
+%right ANDTOK
 %right NOTTOK
 
 %%
