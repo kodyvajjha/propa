@@ -1,2 +1,3 @@
 (test
- (name propa))
+ (name test_parser)
+ (libraries propa))
