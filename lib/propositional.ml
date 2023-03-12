@@ -18,7 +18,7 @@ let pp_row fmla v =
     CCFormat.(list ~sep:(return " ") ttbool)
     lis ttbool ans
 
-let pp_truth_table fmla (v : 'a -> bool) =
+let pp_truth_table fmla =
   let rec aux v ls =
     match ls with
     | [] -> ()
@@ -41,5 +41,25 @@ let pp_truth_table fmla (v : 'a -> bool) =
     CCFormat.(list ~sep:(return " ") ttstring)
     ats Formula.pp_string_formula fmla;
   CCFormat.printf "%s@." sep;
+  let v _ = true in
   pp_row fmla v;
   aux v ats
+
+let rec onallvaluations subfn v ats =
+  match ats with
+  | [] -> subfn v
+  | p :: ps ->
+    let v' t q =
+      if q = p then
+        t
+      else
+        v q
+    in
+    onallvaluations subfn (v' false) ps && onallvaluations subfn (v' true) ps
+
+let tautology fm =
+  onallvaluations (Semantics.eval fm) (fun _ -> false) (Formula.atoms fm)
+
+let unsatisfiable fm = tautology (Not fm)
+
+let satisfiable fm = not @@ unsatisfiable fm
