@@ -57,3 +57,16 @@ let rec atoms (fmla : 'a t) =
 let total_atom_length fmla =
   let ats = atoms fmla in
   List.fold_left ( + ) 0 (List.map String.length ats)
+
+let rec onatoms f (fm : 'a t) =
+  match fm with
+  | False -> False
+  | True -> True
+  | Atom a -> f a
+  | Not a -> Not (onatoms f a)
+  | And (a, b) -> And (onatoms f a, onatoms f b)
+  | Or (a, b) -> Or (onatoms f a, onatoms f b)
+  | Imp (a, b) -> Imp (onatoms f a, onatoms f b)
+  | Iff (a, b) -> Iff (onatoms f a, onatoms f b)
+  | Forall (x, p) -> Forall (x, onatoms f p)
+  | Exists (x, p) -> Exists (x, onatoms f p)
