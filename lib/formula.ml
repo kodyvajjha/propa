@@ -54,19 +54,21 @@ let rec atoms (fmla : 'a t) =
   | Forall (_, _) -> failwith "not implemented"
   | Exists (_, _) -> failwith "not implemented"
 
+let exists_atom p fmla = CCList.exists (fun x -> x = p) (atoms fmla)
+
 let total_atom_length fmla =
   let ats = atoms fmla in
   List.fold_left ( + ) 0 (List.map String.length ats)
 
-let rec onatoms f (fm : 'a t) =
-  match fm with
+let rec onatoms ~f ~(fmla : 'a t) =
+  match fmla with
   | False -> False
   | True -> True
   | Atom a -> f a
-  | Not a -> Not (onatoms f a)
-  | And (a, b) -> And (onatoms f a, onatoms f b)
-  | Or (a, b) -> Or (onatoms f a, onatoms f b)
-  | Imp (a, b) -> Imp (onatoms f a, onatoms f b)
-  | Iff (a, b) -> Iff (onatoms f a, onatoms f b)
-  | Forall (x, p) -> Forall (x, onatoms f p)
-  | Exists (x, p) -> Exists (x, onatoms f p)
+  | Not a -> Not (onatoms ~f ~fmla:a)
+  | And (a, b) -> And (onatoms ~f ~fmla:a, onatoms ~f ~fmla:b)
+  | Or (a, b) -> Or (onatoms ~f ~fmla:a, onatoms ~f ~fmla:b)
+  | Imp (a, b) -> Imp (onatoms ~f ~fmla:a, onatoms ~f ~fmla:b)
+  | Iff (a, b) -> Iff (onatoms ~f ~fmla:a, onatoms ~f ~fmla:b)
+  | Forall (x, p) -> Forall (x, onatoms ~f ~fmla:p)
+  | Exists (x, p) -> Exists (x, onatoms ~f ~fmla:p)
