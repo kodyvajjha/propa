@@ -13,25 +13,7 @@ let () =
     Formula.pp_string_formula fmla2
     (fmla2 |> Propositional.tautology |> string_of_bool)
 
-let rec psubst (subfn : (string * string Formula.t) list) fmla :
-    string Formula.t =
-  match subfn with
-  | [] -> fmla
-  | (p, fm) :: xs ->
-    if Formula.exists_atom p fmla then
-      psubst xs
-        (Formula.onatoms
-           ~f:(fun s ->
-             if s = p then
-               fm
-             else
-               Parse.string (s ^ "\n"))
-           ~fmla)
-    else
-      fmla
-(* failwith @@ "atom " ^ p ^ " does not exist in formula" *)
-
 let () =
   let fmla = Parse.string "(p /\\ q /\\ p /\\ q)\n" in
-  let substfmla = psubst [ "p", Parse.string "true\n" ] fmla in
+  let substfmla = Propositional.psubst [ "p", Parse.string "true\n" ] fmla in
   CCFormat.printf "@.%a" Formula.pp_string_formula substfmla

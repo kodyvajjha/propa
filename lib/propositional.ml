@@ -63,3 +63,30 @@ let tautology fm =
 let unsatisfiable fm = tautology (Not fm)
 
 let satisfiable fm = not @@ unsatisfiable fm
+
+let dual (fm : 'a Formula.t) =
+  match fm with
+  | Formula.False -> Formula.True
+  | Formula.True -> Formula.False
+  | Formula.Atom p -> Formula.Atom p
+  | Formula.Not p -> p
+  | Formula.And (p, q) -> Formula.Or (p, q)
+  | Formula.Or (p, q) -> Formula.And (p, q)
+  | _ -> failwith "dual doesn't exist for this formula"
+
+let rec psubst (subfn : (string * string Formula.t) list) fmla :
+    string Formula.t =
+  match subfn with
+  | [] -> fmla
+  | (p, fm) :: xs ->
+    if Formula.exists_atom p fmla then
+      psubst xs
+        (Formula.onatoms
+           ~f:(fun s ->
+             if s = p then
+               fm
+             else
+               Parse.string (s ^ "\n"))
+           ~fmla)
+    else
+      fmla
