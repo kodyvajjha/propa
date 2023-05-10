@@ -1,4 +1,5 @@
-(executable
- (name main)
- (public_name propa)
+(executables
+ (names main tree)
+ (preprocess (pps ppx_deriving.show))
+ (public_names propa tree)
  (libraries propa))
