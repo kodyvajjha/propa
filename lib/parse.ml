@@ -7,7 +7,7 @@ module StringParser = Parser.Make (struct
 end)
 
 let string str =
-  let lexbuf = Lexing.from_string str in
+  let lexbuf = Lexing.from_string (str ^ "\n") in
   StringParser.main Lexer.token lexbuf
 
 module Primitive = struct
