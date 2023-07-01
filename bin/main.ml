@@ -2,10 +2,12 @@ open Propa
 
 let () = Printexc.record_backtrace true
 
+let spf = CCFormat.printf "@[@.%a@.@]" Formula.pp_string_formula
+
 let () =
-  let fmla1 = Parse.string "(p \\/ q) /\\ ~(p /\\ q) ==> (~p <==> q) \n" in
+  let fmla1 = Parse.string "(p \\/ q) /\\ ~(p /\\ q) ==> (~p <==> q)" in
   (* Dijkstra Scholten tautology*)
-  let fmla2 = Parse.string "p \\/ (q <==> r) <==> ( p \\/ q <==> p \\/ r)\n" in
+  let fmla2 = Parse.string "p \\/ (q <==> r) <==> ( p \\/ q <==> p \\/ r)" in
   print_endline " ";
   Propositional.pp_truth_table fmla1;
   Propositional.pp_truth_table fmla2;
@@ -14,13 +16,12 @@ let () =
     (fmla2 |> Propositional.tautology |> string_of_bool)
 
 let () =
-  let fmla = Parse.string "(p /\\ q /\\ p /\\ q)\n" in
-  let substfmla = Propositional.psubst [ "p", Parse.string "true\n" ] fmla in
-  CCFormat.printf "@.%a@." Formula.pp_string_formula substfmla
+  let fmla = Parse.string "(p /\\ q /\\ p /\\ q)" in
+  let substfmla = Propositional.psubst [ "p", Parse.string "true" ] fmla in
+  spf substfmla
 
 let () =
   let fmla =
     Parse.string "(true ==> (x <==> false)) ==> ~(y \\/ false /\\ z)\n"
   in
-  CCFormat.printf "@[@.%a@.@]" Formula.pp_string_formula
-    (Propositional.psimplify fmla)
+  spf @@ Propositional.psimplify fmla

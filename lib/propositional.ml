@@ -119,3 +119,25 @@ let rec psimplify (fmla : 'a Formula.t) =
 let negate : 'a Formula.t -> 'a Formula.t = function
   | Not p -> p
   | p -> Not p
+
+let negative (fmla : 'a Formula.t) =
+  match fmla with
+  | Not _ -> true
+  | _ -> false
+
+let positive fmla = not @@ negative fmla
+
+let rec nnf (fmla : 'a Formula.t) : 'a Formula.t =
+  let open Formula in
+  let sfmla = psimplify fmla in
+  match sfmla with
+  | And (p, q) -> And (nnf p, nnf q)
+  | Or (p, q) -> Or (nnf p, nnf q)
+  | Imp (p, q) -> Or (nnf (Not p), nnf q)
+  | Iff (p, q) -> Or (And (nnf p, nnf q), And (nnf (Not p), nnf (Not q)))
+  | Not (Not p) -> nnf p
+  | Not (And (p, q)) -> Or (nnf (Not p), nnf (Not q))
+  | Not (Or (p, q)) -> And (nnf (Not p), nnf (Not q))
+  | Not (Imp (p, q)) -> And (nnf p, nnf (Not q))
+  | Not (Iff (p, q)) -> Or (And (nnf p, nnf (Not q)), And (nnf (Not p), nnf q))
+  | _ -> sfmla
