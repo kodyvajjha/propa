@@ -90,3 +90,32 @@ let rec psubst (subfn : (string * string Formula.t) list) fmla :
            ~fmla)
     else
       fmla
+
+let rec psimplify (fmla : 'a Formula.t) =
+  let open Formula in
+  let aux fmla =
+    match fmla with
+    | Not False -> True
+    | Not True -> False
+    | And (True, p) | And (p, True) -> p
+    | And (False, _) | And (_, False) -> False
+    | Or (True, _) | Or (_, True) -> True
+    | Or (False, p) | Or (p, False) -> p
+    | Imp (True, p) -> p
+    | Imp (False, _) | Imp (_, True) -> True
+    | Imp (p, False) -> Not p
+    | Iff (p, True) | Iff (True, p) -> p
+    | Iff (p, False) | Iff (False, p) -> Not p
+    | _ -> fmla
+  in
+  match fmla with
+  | Not p -> aux (Not (psimplify p))
+  | And (p, q) -> aux (And (psimplify p, psimplify q))
+  | Or (p, q) -> aux (Or (psimplify p, psimplify q))
+  | Imp (p, q) -> aux (Imp (psimplify p, psimplify q))
+  | Iff (p, q) -> aux (Iff (psimplify p, psimplify q))
+  | _ -> fmla
+
+let negate : 'a Formula.t -> 'a Formula.t = function
+  | Not p -> p
+  | p -> Not p

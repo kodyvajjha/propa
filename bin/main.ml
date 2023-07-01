@@ -16,4 +16,11 @@ let () =
 let () =
   let fmla = Parse.string "(p /\\ q /\\ p /\\ q)\n" in
   let substfmla = Propositional.psubst [ "p", Parse.string "true\n" ] fmla in
-  CCFormat.printf "@.%a" Formula.pp_string_formula substfmla
+  CCFormat.printf "@.%a@." Formula.pp_string_formula substfmla
+
+let () =
+  let fmla =
+    Parse.string "(true ==> (x <==> false)) ==> ~(y \\/ false /\\ z)\n"
+  in
+  CCFormat.printf "@[@.%a@.@]" Formula.pp_string_formula
+    (Propositional.psimplify fmla)
