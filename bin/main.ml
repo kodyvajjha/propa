@@ -18,10 +18,13 @@ let () =
 let () =
   let fmla = Parse.string "(p /\\ q /\\ p /\\ q)" in
   let substfmla = Propositional.psubst [ "p", Parse.string "true" ] fmla in
+  print_endline "original formula:";
+  spf fmla;
+  print_endline "substituted formula:";
   spf substfmla
 
-let () =
-  let fmla =
-    Parse.string "(true ==> (x <==> false)) ==> ~(y \\/ false /\\ z)\n"
-  in
-  spf @@ Propositional.psimplify fmla
+(* let () =
+   let fmla =
+     Parse.string "(true ==> (x <==> false)) ==> ~(y \\/ false /\\ z)\n"
+   in
+   spf @@ Propositional.psimplify fmla *)
