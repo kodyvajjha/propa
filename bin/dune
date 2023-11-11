@@ -1,5 +1,5 @@
 (executables
- (names main tree)
+ (names main tree truth_table)
  (preprocess (pps ppx_deriving.show))
- (public_names propa tree)
+ (public_names propa tree truth_table)
  (libraries propa))
