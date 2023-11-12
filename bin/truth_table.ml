@@ -12,6 +12,9 @@ let rec repl () =
     repl ()
   with
   | End_of_file -> print_string "Goodbye!"
-  | Lexer.SyntaxError err -> CCFormat.eprintf "Lexer error : %s" err
+  | Sys.Break -> CCFormat.printf "Goodbye!@."
+  | Lexer.SyntaxError err ->
+    CCFormat.eprintf "Lexer error : %s@." err;
+    repl ()
 
 let () = repl ()
