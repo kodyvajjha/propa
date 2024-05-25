@@ -141,3 +141,60 @@ let rec nnf (fmla : 'a Formula.t) : 'a Formula.t =
   | Not (Imp (p, q)) -> And (nnf p, nnf (Not q))
   | Not (Iff (p, q)) -> Or (And (nnf p, nnf (Not q)), And (nnf (Not p), nnf q))
   | _ -> sfmla
+
+module Dnf = struct
+  let rec list_conj (l : 'a Formula.t list) =
+    match l with
+    | [] -> Formula.True
+    | l :: ls ->
+      if ls = [] then
+        l
+      else
+        Formula.mk_and l (list_conj ls)
+
+  let rec list_disj (l : 'a Formula.t list) =
+    match l with
+    | [] -> Formula.False
+    | l :: ls ->
+      if ls = [] then
+        l
+      else
+        Formula.mk_or l (list_disj ls)
+
+  let mk_lits ~(fmls : 'a Formula.t list) v =
+    list_conj
+      (CCList.map
+         (fun p ->
+           if Semantics.eval p v then
+             p
+           else
+             Formula.Not p)
+         fmls)
+
+  (** Collect the valuations for which subfn holds into a list  *)
+  let rec allsatvaluations ~subfn v pvs =
+    match pvs with
+    | [] ->
+      if subfn v then
+        [ v ]
+      else
+        []
+    | p :: ps ->
+      let v' t q =
+        if q = p then
+          t
+        else
+          v q
+      in
+      allsatvaluations ~subfn (v' false) ps
+      @ allsatvaluations ~subfn (v' true) ps
+
+  let make fm =
+    let open Formula in
+    let pvs = atoms fm in
+    let satvals =
+      allsatvaluations ~subfn:(Semantics.eval fm) (fun _s -> false) pvs
+    in
+    list_disj
+      (CCList.map (mk_lits ~fmls:(CCList.map (fun p -> Atom p) pvs)) satvals)
+end

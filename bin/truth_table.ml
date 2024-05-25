@@ -6,10 +6,12 @@ module ParseFormula = Parse
 type input =
   | I_truth_table
   | I_nnf
+  | I_dnf
   | I_tautology
 
 let input_of_string str =
   match str with
+  | "dnf" -> Some I_dnf
   | "nnf" -> Some I_nnf
   | "truth_table" -> Some I_truth_table
   | "tautology" -> Some I_tautology
@@ -35,6 +37,13 @@ let rec handle_input i =
      let fmla_string = read_line () in
      let fmla = ParseFormula.string fmla_string in
      CCFormat.printf "@[%a@.@]" CCFormat.bool (Propositional.tautology fmla));
+    handle_input i
+  | I_dnf ->
+    (print_string "dnf> ";
+     let fmla_string = read_line () in
+     let fmla = ParseFormula.string fmla_string in
+     CCFormat.printf "@[%a@.@]" Formula.pp_string_formula
+       (Propositional.Dnf.make fmla));
     handle_input i
 
 let rec repl () =
