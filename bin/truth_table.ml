@@ -8,9 +8,11 @@ type input =
   | I_nnf
   | I_dnf
   | I_tautology
+  | I_pp
 
 let input_of_string str =
   match str with
+  | "pp" -> Some I_pp
   | "dnf" -> Some I_dnf
   | "nnf" -> Some I_nnf
   | "truth_table" -> Some I_truth_table
@@ -45,6 +47,12 @@ let rec handle_input i =
      CCFormat.printf "@[%a@.@]" Formula.pp_string_formula
        (Propositional.Dnf.make fmla));
     handle_input i
+  | I_pp ->
+    (print_string "pp> ";
+     let fmla_string = read_line () in
+     let fmla = ParseFormula.string fmla_string in
+     CCFormat.printf "@[%a@.@]" Formula.pp_string_formula fmla);
+    handle_input i
 
 let rec repl () =
   try
@@ -59,7 +67,9 @@ let rec repl () =
           CCFormat.printf "@.";
           ())
      | None ->
-       print_endline "Invalid input. Valid options are truth_table and nnf.");
+       print_endline
+         "Invalid input. Valid options are truth_table, nnf, pp, dnf, \
+          tautology.");
     repl ()
   with
   | End_of_file -> print_string "Goodbye!"
